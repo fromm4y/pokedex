@@ -1,98 +1,25 @@
 // =====================================
-// CONFIGURAÇÕES GERAIS
+// CONFIGURAÇÕES
 // =====================================
 
-export const MODELO = "gemini-2.5-flash";
+export const STORAGE_ALBUM = "pokedex_mata_album";
 
-export const LIMIAR_CONFIANCA = 80;
+export const MAP_CENTER = [-15, -55];
 
+export const MAP_ZOOM = 4;
 
-// =====================================
-// API KEY
-// =====================================
+export const BIOMAS = {
 
-export let API_KEY = ""
-export function salvarApiKey(chave) {
+    "Amazônia": [-3, -60],
 
-    API_KEY = chave;
+    "Cerrado": [-15, -47],
 
-    localStorage.setItem(
-        "gemini_api_key",
-        chave
-    );
+    "Caatinga": [-9, -40],
 
-}
+    "Pantanal": [-17, -57],
 
-export function carregarApiKey() {
+    "Mata Atlântica": [-23, -44],
 
-    const chave = localStorage.getItem(
-        "gemini_api_key"
-    );
+    "Pampa": [-30, -55]
 
-    if (chave) {
-        API_KEY = chave;
-    }
-
-    return API_KEY;
-
-}
-
-export const TEMAS = [
-
-    {
-        id: "mamiferos",
-        nome: "Mamíferos",
-        descricao: "Fauna brasileira",
-        alvo: "mamífero",
-        cor: "#2F855A",
-        cor2: "#68D391"
-    },
-
-    {
-        id: "aves",
-        nome: "Aves",
-        descricao: "Pássaros e aves nativas",
-        alvo: "ave",
-        cor: "#276749",
-        cor2: "#9AE6B4"
-    },
-
-    {
-        id: "repteis",
-        nome: "Répteis",
-        descricao: "Cobras e lagartos",
-        alvo: "réptil",
-        cor: "#22543D",
-        cor2: "#48BB78"
-    },
-
-    {
-        id: "anfibios",
-        nome: "Anfíbios",
-        descricao: "Sapos e rãs",
-        alvo: "anfíbio",
-        cor: "#2D6A4F",
-        cor2: "#74C69D"
-    },
-
-    {
-        id: "plantas",
-        nome: "Plantas",
-        descricao: "Espécies vegetais",
-        alvo: "planta",
-        cor: "#1B4332",
-        cor2: "#95D5B2"
-    },
-
-    {
-        id: "insetos",
-        nome: "Insetos",
-        descricao: "Fauna pequena",
-        alvo: "inseto",
-        cor: "#40916C",
-        cor2: "#B7E4C7"
-    }
-
-];
-
-carregarApiKey();
+};

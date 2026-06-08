@@ -1,16 +1,19 @@
-function obterAlbum() {
+import { STORAGE_ALBUM } from "../config.js";
+
+export function carregarAlbum() {
 
     return JSON.parse(
-        localStorage.getItem(CONFIG.STORAGE_KEY)
+        localStorage.getItem(STORAGE_ALBUM)
     ) || [];
+
 }
 
-function salvarNoAlbum(animal) {
+export function salvarAnimal(animal) {
 
-    const album = obterAlbum();
+    const album = carregarAlbum();
 
     const existe = album.find(
-        item => item.nomeCientifico === animal.nomeCientifico
+        item => item.id === animal.id
     );
 
     if (existe) return;
@@ -18,12 +21,55 @@ function salvarNoAlbum(animal) {
     album.push(animal);
 
     localStorage.setItem(
-        CONFIG.STORAGE_KEY,
+        STORAGE_ALBUM,
         JSON.stringify(album)
     );
+
 }
 
-function carregarAlbum() {
+export function atualizarAlbum() {
 
-    return obterAlbum();
+    const album = carregarAlbum();
+
+    const container =
+        document.getElementById("album");
+
+    const contador =
+        document.getElementById("albumCount");
+
+    container.innerHTML = "";
+
+    contador.textContent =
+        `${album.length} espécies`;
+
+    album.forEach(animal => {
+
+        container.innerHTML += `
+
+            <div class="album-item">
+
+                <div class="animal-emoji">
+
+                    ${animal.emoji || "🐾"}
+
+                </div>
+
+                <strong>
+
+                    ${animal.nome}
+
+                </strong>
+
+                <small>
+
+                    ${animal.cientifico}
+
+                </small>
+
+            </div>
+
+        `;
+
+    });
+
 }

@@ -1,53 +1,147 @@
-async function identificarMamifero(base64, mimeType) {
+import { API_KEY }
+from "./secret.js";
 
-    const prompt = `
-Você é um mastozoólogo especialista na fauna brasileira.
+export async function analisarImagem(
+    arquivo
+) {
 
-Analise a imagem enviada.
+    const base64 =
+        await converterParaBase64(
+            arquivo
+        );
 
-Retorne APENAS JSON:
-
-{
-  "nomePopular":"",
-  "nomeCientifico":"",
-  "confianca":0,
-  "descricao":"",
-  "bioma":"",
-  "status":"",
-  "curiosidades":[]
-}
-`;
-
-    const body = {
-        contents: [
+    const resposta =
+        await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
             {
-                parts: [
-                    { text: prompt },
-                    {
-                        inline_data: {
-                            mime_type: mimeType,
-                            data: base64
-                        }
-                    }
-                ]
-            }
-        ]
-    };
+                method: "POST",
 
-    const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${CONFIG.GEMINI_MODEL}:generateContent?key=${CONFIG.API_KEY}`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(body)
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    contents: [
+                        {
+                            parts: [
+
+                                {
+                                    text:
+                                        "Diga apenas Olá"
+                                },
+
+                                {
+                                    inline_data: {
+                                        mime_type:
+                                            arquivo.type,
+                                        data:
+                                            base64
+                                    }
+                                }
+
+                            ]
+                        }
+                    ]
+
+                })
+
+            }
+        );
+
+    const dados =
+        await resposta.json();
+
+    console.log(
+        "Resposta Gemini:",
+        dados
+    );
+
+    return dados;
+
+    console.log(
+    JSON.stringify(
+        dados,
+        null,
+        2
+    )
+);
+
+}
+
+
+// =====================================
+// BASE64
+// =====================================
+
+function converterParaBase64(
+    arquivo
+) {
+
+    return new Promise(
+        (resolve, reject) => {
+
+            const reader =
+                new FileReader();
+
+            reader.onload =
+                () => {
+
+                    resolve(
+                        reader.result
+                            .split(",")[1]
+                    );
+
+                };
+
+            reader.onerror =
+                reject;
+
+            reader.readAsDataURL(
+                arquivo
+            );
+
         }
     );
 
-    const data = await response.json();
-
-    return JSON.parse(
-        data.candidates[0].content.parts[0].text
-    );
 }
+
+/*
+body: JSON.stringify({
+
+    contents: [
+        {
+            parts: [
+
+                {
+                    text:
+`Identifique este mamífero brasileiro.
+
+Responda SOMENTE JSON válido:
+
+{
+    "nome":"",
+    "cientifico":"",
+    "descricao":"",
+    "bioma":"",
+    "confianca":90,
+    "curiosidades":[]
+}`
+                },
+
+                {
+                    inline_data: {
+                        mime_type:
+                            arquivo.type,
+                        data:
+                            base64
+                    }
+                }
+
+            ]
+        }
+    ]
+
+})
+*/

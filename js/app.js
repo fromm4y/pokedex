@@ -1,137 +1,61 @@
-// =====================================
-// APP PRINCIPAL
-// =====================================
-
-import { TEMAS } from "./config.js";
-
 import {
-    abrirTela,
-    mostrarToast,
-    renderizarTemas
+    abrirScanner,
+    voltarInicio
 } from "./ui/ui.js";
 
 import {
-    abrirModalApi
-} from "./ui/modal.js";
-
-import {
-    configurarTabs
+    iniciarTabs
 } from "./ui/tabs.js";
 
 import {
-    iniciarScanner
-} from "./features/scanner.js";
-
-import {
-    carregarAlbum
+    atualizarAlbum
 } from "./features/album.js";
 
 import {
-    inicializarMapa
+    iniciarMapa
 } from "./features/mapa.js";
 
 import {
-    carregarBiomas
-} from "./features/bioma.js";
-
-
-// =====================================
-// INICIALIZAÇÃO
-// =====================================
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    console.log("Pokédex da Mata iniciada 🌿");
-
-    iniciarInterface();
-    iniciarEventos();
-
-});
-
-function iniciarInterface() {
-
-    renderizarTemas(TEMAS);
-
-    carregarAlbum();
-
-    inicializarMapa();
-
-    carregarBiomas();
-
-    configurarTabs();
-
-    abrirTela("catalogo");
-
+    iniciarScanner
 }
+from "./features/scanner.js";
 
-function iniciarEventos() {
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
-    const gear = document.getElementById("gear");
+        iniciarTabs();
 
-    if (gear) {
-        gear.addEventListener("click", abrirModalApi);
-    }
+        iniciarScanner();
 
-    const btnVoltar = document.getElementById("btnBack");
+        atualizarAlbum();
 
-    if (btnVoltar) {
+        document
+            .getElementById(
+                "btnIniciar"
+            )
+            .addEventListener(
+                "click",
+                () => {
 
-        btnVoltar.addEventListener("click", () => {
+                    abrirScanner();
 
-            abrirTela("catalogo");
+                    setTimeout(
+                        iniciarMapa,
+                        200
+                    );
 
-        });
+                }
+            );
+
+        document
+            .getElementById(
+                "btnBack"
+            )
+            .addEventListener(
+                "click",
+                voltarInicio
+            );
 
     }
-
-}
-
-
-export function abrirTema(idTema) {
-
-    const tema = TEMAS.find(t => t.id === idTema);
-
-    if (!tema) {
-        mostrarToast("Tema não encontrado");
-        return;
-    }
-
-    window.temaAtual = tema;
-
-    const titulo = document.getElementById("barTitle");
-    const subtitulo = document.getElementById("barSub");
-
-    if (titulo) titulo.textContent = tema.nome;
-
-    if (subtitulo) {
-        subtitulo.textContent =
-            `Identificando: ${tema.alvo}`;
-    }
-
-    abrirTela("scanner");
-
-    iniciarScanner();
-
-}
-
-export function voltarCatalogo() {
-
-    abrirTela("catalogo");
-
-}
-
-export function aplicarTemaVisual(tema) {
-
-    document.documentElement.style.setProperty(
-        "--glow-primary",
-        tema.cor
-    );
-
-    document.documentElement.style.setProperty(
-        "--glow-secondary",
-        tema.cor2
-    );
-
-}
-
-window.abrirTema = abrirTema;
+);

@@ -1,17 +1,50 @@
+import {
+    MAP_CENTER,
+    MAP_ZOOM,
+    BIOMAS
+} from "../config.js";
+
 let mapa;
 
-function inicializarMapa() {
+export function iniciarMapa() {
+
+    if (mapa) return;
 
     mapa = L.map("mapa")
-        .setView([-14.235, -51.9253], 4);
+        .setView(
+            MAP_CENTER,
+            MAP_ZOOM
+        );
 
     L.tileLayer(
-        "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+            attribution:
+                "&copy; OpenStreetMap"
+        }
     ).addTo(mapa);
+
 }
 
-function mostrarDistribuicao(lat, lng) {
+export function adicionarAnimalMapa(animal) {
 
-    L.marker([lat, lng])
-        .addTo(mapa);
+    if (!animal.biomas) return;
+
+    animal.biomas.forEach(bioma => {
+
+        const posicao =
+            BIOMAS[bioma];
+
+        if (!posicao) return;
+
+        L.marker(posicao)
+            .addTo(mapa)
+            .bindPopup(`
+                <strong>${animal.nome}</strong>
+                <br>
+                ${animal.cientifico}
+            `);
+
+    });
+
 }
