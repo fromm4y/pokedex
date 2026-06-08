@@ -1,0 +1,22 @@
+[
+  {
+    "nome":"Onça-pintada",
+    "cientifico":"Panthera onca",
+    "bioma":"amazonia",
+    "status":"Quase ameaçada"
+  },
+
+  {
+    "nome":"Lobo-guará",
+    "cientifico":"Chrysocyon brachyurus",
+    "bioma":"cerrado",
+    "status":"Quase ameaçada"
+  },
+
+  {
+    "nome":"Mico-leão-dourado",
+    "cientifico":"Leontopithecus rosalia",
+    "bioma":"mata-atlantica",
+    "status":"Em perigo"
+  }
+]

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Pokédex da Mata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-0:#040a07;
+  --bg-1:#06100b;
+  --glow-primary:#3ef0a0;
+  --glow-secondary:#22d3ee;
+  --glow-warm:#c8f06b;
+  --text:#e8f5ee;
+  --text-dim:#7e9c8c;
+  --surface:rgba(18,38,28,0.55);
+  --surface-line:rgba(255,255,255,0.10);
+  --danger:#f0723e;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--bg-0);color:var(--text);font-family:'Hanken Grotesk',sans-serif;min-height:100vh;overflow-x:hidden;position:relative;transition:background .6s}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;transition:.6s;background:radial-gradient(60% 50% at 18% 8%, color-mix(in srgb, var(--glow-primary) 14%, transparent), transparent 60%),radial-gradient(50% 40% at 88% 22%, color-mix(in srgb, var(--glow-secondary) 12%, transparent), transparent 60%),radial-gradient(70% 60% at 50% 110%, color-mix(in srgb, var(--glow-primary) 9%, transparent), transparent 55%),linear-gradient(180deg,var(--bg-1),var(--bg-0))}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.04;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.app{position:relative;z-index:1;max-width:580px;margin:0 auto;padding:0 20px 120px;min-height:100vh;display:flex;flex-direction:column}
+.screen{display:none}
+.screen.active{display:flex;flex-direction:column;animation:fade .45s ease}
+header{padding:40px 0 18px;text-align:center;position:relative}
+.spark{position:absolute;width:14px;height:14px;opacity:.5}
+.spark svg{width:100%;height:100%;display:block}
+.spark.s1{top:36px;left:6px;color:var(--glow-secondary)}
+.spark.s2{top:74px;right:12px;color:var(--glow-warm)}
+.eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.42em;text-transform:uppercase;color:var(--glow-primary);opacity:.85}
+h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(40px,11vw,58px);line-height:1.02;letter-spacing:-.02em;margin:10px 0 8px;padding-top:.12em;background:linear-gradient(140deg,#fff,var(--glow-primary) 60%,var(--glow-secondary));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{color:var(--text-dim);font-size:14px;max-width:340px;margin:0 auto;line-height:1.5}
+.cat-grid{margin-top:26px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.theme-card{position:relative;border-radius:20px;padding:20px 16px 18px;cursor:pointer;overflow:hidden;background:var(--surface);border:1px solid var(--surface-line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .2s,border-color .25s,box-shadow .3s}
+.theme-card:active{transform:scale(.97)}
+.theme-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--c);opacity:.9}
+.theme-card::after{content:"";position:absolute;top:-30px;right:-30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,var(--c),transparent 70%);opacity:.18;transition:.3s}
+.theme-card:hover::after{opacity:.32}
+.tc-spark{width:26px;height:26px;color:var(--c);margin-bottom:12px;filter:drop-shadow(0 0 8px var(--c))}
+.tc-name{font-family:'Fraunces',serif;font-size:19px;font-weight:600;line-height:1.05;margin-bottom:3px}
+.tc-desc{font-size:12px;color:var(--text-dim);line-height:1.35}
+.bar{display:flex;align-items:center;gap:12px;padding:28px 0 6px}
+.back{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--surface-line);color:var(--text);cursor:pointer;flex-shrink:0;transition:transform .15s}
+.back:active{transform:translateX(-3px)}
+.back svg{width:18px;height:18px}
+.bar-title{font-family:'Fraunces',serif;font-size:22px;font-weight:600;line-height:1}
+.bar-sub{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--glow-primary);margin-top:3px}
+.warn{margin-top:14px;border-radius:14px;padding:12px 14px;font-size:12.5px;line-height:1.45;color:#f0c5a0;background:rgba(240,114,62,.08);border:1px solid rgba(240,114,62,.22);display:flex;gap:9px;align-items:flex-start}
+.warn svg{width:16px;height:16px;flex-shrink:0;margin-top:1px;color:var(--danger)}
+.capture-card{margin-top:16px;border-radius:26px;padding:26px 22px 24px;text-align:center;background:var(--surface);border:1px solid var(--surface-line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 30px 80px -40px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.04);position:relative;overflow:hidden}
+.corner{position:absolute;width:34px;height:34px;border:1.5px solid var(--glow-primary);opacity:.4}
+.corner.tl{top:14px;left:14px;border-right:0;border-bottom:0;border-radius:8px 0 0 0}
+.corner.br{bottom:14px;right:14px;border-left:0;border-top:0;border-radius:0 0 8px 0}
+.lens{width:114px;height:114px;margin:4px auto 18px;border-radius:50%;position:relative;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%, color-mix(in srgb,var(--glow-primary) 20%,transparent), rgba(4,10,7,.6) 70%);border:1px solid var(--surface-line)}
+.lens::before{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px dashed color-mix(in srgb,var(--glow-primary) 30%,transparent);animation:spin 22s linear infinite}
+.lens svg{width:44px;height:44px;color:var(--glow-primary);filter:drop-shadow(0 0 10px var(--glow-primary))}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cap-title{font-family:'Fraunces',serif;font-size:20px;font-weight:600;margin-bottom:4px}
+.cap-hint{color:var(--text-dim);font-size:13px;margin-bottom:20px}
+.btn-row{display:flex;gap:10px}
+.btn{flex:1;border:none;border-radius:14px;padding:15px 12px;cursor:pointer;font-family:'Hanken Grotesk',sans-serif;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s,box-shadow .25s}
+.btn svg{width:18px;height:18px}
+.btn-primary{background:linear-gradient(135deg,var(--glow-primary),var(--glow-secondary));color:#04140d;box-shadow:0 14px 34px -14px var(--glow-primary)}
+.btn-primary:active{transform:translateY(2px)}
+.btn-ghost{background:color-mix(in srgb,var(--glow-primary) 6%,transparent);color:var(--text);border:1px solid var(--surface-line)}
+.btn-ghost:active{transform:translateY(2px)}
+input[type=file]{display:none}
+.stage{margin-top:20px}
+.preview-wrap{position:relative;border-radius:22px;overflow:hidden;border:1px solid var(--surface-line);background:#000;display:none}
+.preview-wrap.show{display:block;animation:fade .4s ease}
+.preview-wrap img{width:100%;display:block;max-height:340px;object-fit:cover}
+.scan{position:absolute;inset:0;display:none}
+.scan.on{display:block}
+.scan-line{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--glow-primary),transparent);box-shadow:0 0 18px var(--glow-primary);animation:scan 1.6s ease-in-out infinite}
+.scan-veil{position:absolute;inset:0;background:rgba(4,10,7,.45)}
+@keyframes scan{0%{top:4%}50%{top:94%}100%{top:4%}}
+.analysing{display:none;text-align:center;margin-top:16px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--glow-primary)}
+.analysing.on{display:block;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.4}}
+.result{margin-top:18px;display:none}
+.result.show{display:block}
+.result .card{border-radius:22px;padding:22px;background:var(--surface);border:1px solid var(--surface-line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.r-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:4px}
+.r-name{font-family:'Fraunces',serif;font-size:28px;font-weight:900;line-height:1.04;letter-spacing:-.02em}
+.r-sci{font-family:'Space Mono',monospace;font-size:13px;color:var(--glow-secondary);font-style:italic;margin-top:2px}
+.badge{flex-shrink:0;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:6px 11px;border-radius:999px;border:1px solid var(--surface-line);color:var(--glow-primary);background:color-mix(in srgb,var(--glow-primary) 8%,transparent);white-space:nowrap}
+.r-section{margin-top:18px}
+.r-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--text-dim);margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.r-label::after{content:"";flex:1;height:1px;background:var(--surface-line)}
+.conservation{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:15px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--glow-primary);box-shadow:0 0 10px var(--glow-primary)}
+.facts{list-style:none;display:flex;flex-direction:column;gap:11px}
+.facts li{position:relative;padding-left:20px;font-size:14.5px;line-height:1.5;color:#d4e8de}
+.facts li::before{content:"";position:absolute;left:0;top:8px;width:7px;height:7px;border-radius:2px;transform:rotate(45deg);background:var(--glow-warm)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:13px;padding:7px 13px;border-radius:10px;background:color-mix(in srgb,var(--glow-secondary) 7%,transparent);border:1px solid color-mix(in srgb,var(--glow-secondary) 18%,transparent);color:#cdeef5}
+.reveal{opacity:0;transform:translateY(10px);animation:rise .5s forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.uncertain{border-radius:22px;padding:26px 22px;text-align:center;background:rgba(240,114,62,.06);border:1px solid rgba(240,114,62,.25)}
+.uncertain .ic{width:46px;height:46px;margin:0 auto 12px;color:var(--danger)}
+.uncertain h3{font-family:'Fraunces',serif;font-size:20px;margin-bottom:6px}
+.uncertain p{color:var(--text-dim);font-size:14px;line-height:1.5}
+.again{margin-top:16px;width:100%;border:1px solid var(--surface-line);background:color-mix(in srgb,var(--glow-primary) 5%,transparent);color:var(--text);border-radius:14px;padding:14px;font-family:'Hanken Grotesk';font-weight:700;font-size:14px;cursor:pointer}
+.again:active{transform:translateY(2px)}
+.album{margin-top:38px}
+.album-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+.album-head h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600}
+.album-count{font-family:'Space Mono',monospace;font-size:12px;color:var(--glow-primary)}
+.album-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.album-empty{color:var(--text-dim);font-size:13px;text-align:center;padding:24px;border:1px dashed var(--surface-line);border-radius:16px}
+.album-item{border-radius:14px;overflow:hidden;border:1px solid var(--surface-line);background:var(--surface);position:relative;aspect-ratio:1}
+.album-item img{width:100%;height:100%;object-fit:cover;opacity:.92}
+.album-item span{position:absolute;left:0;right:0;bottom:0;padding:14px 8px 6px;font-size:10.5px;font-weight:600;line-height:1.15;background:linear-gradient(transparent,rgba(4,10,7,.92));text-align:center}
+.gear{position:fixed;top:16px;right:16px;z-index:30;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--surface-line);color:var(--text-dim);cursor:pointer;backdrop-filter:blur(8px)}
+.gear svg{width:19px;height:19px}
+.modal{position:fixed;inset:0;z-index:40;background:rgba(2,6,4,.82);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:22px}
+.modal.show{display:flex;animation:fade .25s}
+.modal-card{width:100%;max-width:420px;background:var(--bg-1);border:1px solid var(--surface-line);border-radius:22px;padding:26px}
+.modal-card h3{font-family:'Fraunces',serif;font-size:22px;margin-bottom:6px}
+.modal-card p{color:var(--text-dim);font-size:13px;line-height:1.5;margin-bottom:16px}
+.modal-card p a{color:var(--glow-secondary)}
+.modal-card input{width:100%;background:color-mix(in srgb,var(--glow-primary) 5%,transparent);border:1px solid var(--surface-line);border-radius:12px;padding:14px;color:var(--text);font-family:'Space Mono',monospace;font-size:13px;margin-bottom:14px}
+.modal-card input:focus{outline:none;border-color:var(--glow-primary)}
+.modal-actions{display:flex;gap:10px}
+.modal-actions .btn{flex:1}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);z-index:50;background:var(--bg-1);border:1px solid var(--surface-line);color:var(--text);padding:13px 20px;border-radius:14px;font-size:13.5px;font-weight:600;opacity:0;transition:.3s;pointer-events:none;box-shadow:0 20px 50px -20px #000}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+footer{margin-top:auto;padding-top:34px;text-align:center;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);opacity:.6}
+</style>
+</head>
+<body>
+
+<div class="gear" id="gear" title="Configurar chave">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+</div>
+
+<div class="app">
+
+  <!-- ===================== TELA: CATÁLOGO ===================== -->
+  <div class="screen active" id="screenCatalog">
+    <header>
+      <span class="spark s1"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l2.5 9.5L24 12l-9.5 2.5L12 24l-2.5-9.5L0 12l9.5-2.5z"/></svg></span>
+      <span class="spark s2"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l2.5 9.5L24 12l-9.5 2.5L12 24l-2.5-9.5L0 12l9.5-2.5z"/></svg></span>
+      <div class="eyebrow">Núcleo WIT · Identificador</div>
+      <h1>Pokédex<br>da Mata</h1>
+      <p class="subtitle">Escolha o que você quer descobrir hoje.</p>
+    </header>
+    <div class="cat-grid" id="catGrid"></div>
+    <footer>Floresta + Tecnologia · IA de visão</footer>
+  </div>
+
+  <!-- ===================== TELA: IDENTIFICAR ===================== -->
+  <div class="screen" id="screenIdentify">
+    <div class="bar">
+      <button class="back" id="btnBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+      <div>
+        <div class="bar-title" id="barTitle">—</div>
+        <div class="bar-sub" id="barSub">—</div>
+      </div>
+    </div>
+
+    <div class="warn" id="warnBox" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+      <span id="warnText"></span>
+    </div>
+
+    <div class="capture-card">
+      <span class="corner tl"></span><span class="corner br"></span>
+      <div class="lens">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </div>
+      <div class="cap-title">Pronto pra descobrir?</div>
+      <div class="cap-hint">Tire uma foto ou envie uma imagem da galeria.</div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnCam">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Tirar foto
+        </button>
+        <button class="btn btn-ghost" id="btnGallery">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Galeria
+        </button>
+      </div>
+      <input type="file" id="fileCam" accept="image/*" capture="environment">
+      <input type="file" id="fileGal" accept="image/*">
+    </div>
+
+    <div class="stage">
+      <div class="preview-wrap" id="previewWrap">
+        <img id="preview" alt="">
+        <div class="scan" id="scan"><div class="scan-veil"></div><div class="scan-line"></div></div>
+      </div>
+      <div class="analysing" id="analysing">Analisando imagem…</div>
+    </div>
+
+    <div class="result" id="result"></div>
+
+    <div class="album">
+      <div class="album-head">
+        <h2>Álbum de descobertas</h2>
+        <span class="album-count" id="albumCount">0 espécies</span>
+      </div>
+      <div id="albumBody"><div class="album-empty">Suas identificações aparecem aqui.</div></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-card">
+    <h3>Chave da API Gemini</h3>
+    <p>Cole aqui a chave do grupo. Pegue uma gratuita em <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>. A chave fica só neste dispositivo.</p>
+    <input type="password" id="keyInput" placeholder="AIza...">
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="keyCancel">Cancelar</button>
+      <button class="btn btn-primary" id="keySave">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   CATÁLOGO DE TEMAS — cada item é um app possível.
+   Pra criar um novo tema, copie um objeto e troque os campos.
+   ============================================================ */
+const TEMAS = [
+  { id:"aves", nome:"Aves do Brasil", desc:"Pássaros e aves nativas",
+    alvo:"ave brasileira", especialista:"um ornitólogo brasileiro especialista nas aves do Brasil",
+    cor:"#3ef0a0", cor2:"#22d3ee" },
+
+  { id:"frutas", nome:"Frutas Brasileiras", desc:"Frutas nativas e tropicais",
+    alvo:"fruta", especialista:"um engenheiro agrônomo especialista em frutas brasileiras e tropicais",
+    cor:"#ff9f45", cor2:"#ffd24a" },
+
+  { id:"arvores", nome:"Árvores Nativas", desc:"Espécies da flora brasileira",
+    alvo:"árvore", especialista:"um dendrólogo especialista em árvores nativas do Brasil",
+    cor:"#5fcf6e", cor2:"#c8f06b" },
+
+  { id:"medicinais", nome:"Plantas Medicinais", desc:"Ervas e usos tradicionais",
+    alvo:"planta medicinal", especialista:"um etnobotânico especialista em plantas medicinais brasileiras",
+    cor:"#4fe0b5", cor2:"#8ef0d0",
+    aviso:"As informações são educativas. Nunca use uma planta como remédio sem orientação de um profissional de saúde." },
+
+  { id:"insetos", nome:"Insetos", desc:"A fauna invisível da mata",
+    alvo:"inseto", especialista:"um entomólogo especialista na fauna de insetos do Brasil",
+    cor:"#aef03e", cor2:"#e0f04a" },
+
+  { id:"cogumelos", nome:"Cogumelos e Fungos", desc:"Espécies do reino fungi",
+    alvo:"cogumelo ou fungo", especialista:"um micólogo especialista em fungos e cogumelos",
+    cor:"#f0765e", cor2:"#f0a05e",
+    aviso:"NUNCA consuma um cogumelo identificado por aplicativo. Espécies tóxicas se parecem com comestíveis." },
+
+  { id:"mamiferos", nome:"Mamíferos", desc:"Bichos da fauna brasileira",
+    alvo:"mamífero", especialista:"um mastozoólogo especialista nos mamíferos da fauna brasileira",
+    cor:"#f0b24a", cor2:"#f0d24a" },
+
+  { id:"repteis", nome:"Répteis e Anfíbios", desc:"Cobras, lagartos e sapos",
+    alvo:"réptil ou anfíbio", especialista:"um herpetólogo especialista em répteis e anfíbios do Brasil. Sempre informe se a espécie é peçonhenta",
+    cor:"#7ef03e", cor2:"#3ef0a0",
+    aviso:"Em caso de picada, procure atendimento médico imediato. Nunca manuseie o animal." },
+
+  { id:"flores", nome:"Flores", desc:"Plantas ornamentais e silvestres",
+    alvo:"flor", especialista:"um botânico especialista em flores e plantas ornamentais",
+    cor:"#f06ec0", cor2:"#f0a0d8" },
+
+  { id:"peixes", nome:"Peixes de Rio", desc:"Fauna de água doce",
+    alvo:"peixe de água doce", especialista:"um ictiólogo especialista em peixes de água doce brasileiros",
+    cor:"#4aa8f0", cor2:"#3ed8f0" }
+];
+
+const MODELO = "gemini-2.5-flash";   // troque por "gemini-2.5-flash-lite" pra mais requisições/dia
+const LIMIAR_CONFIANCA = 80;
+
+// COLE SUA CHAVE AQUI pra enviar o app já configurado aos colegas.
+// Deixe "" se NÃO quiser embutir (aí cada um cola a sua na engrenagem).
+const CHAVE_PADRAO = "";
+/* ============================================================ */
+
+let API_KEY = "";
+try { API_KEY = localStorage.getItem("gemini_key") || ""; } catch(e){}
+if(!API_KEY) API_KEY = CHAVE_PADRAO;
+
+let TEMA = null;
+const album = [];
+
+const $ = id => document.getElementById(id);
+const SPARK = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l2.5 9.5L24 12l-9.5 2.5L12 24l-2.5-9.5L0 12l9.5-2.5z"/></svg>';
+
+function renderCatalog(){
+  $("catGrid").innerHTML = TEMAS.map(t=>`
+    <div class="theme-card" style="--c:${t.cor}" onclick="abrirTema('${t.id}')">
+      <div class="tc-spark">${SPARK}</div>
+      <div class="tc-name">${t.nome}</div>
+      <div class="tc-desc">${t.desc}</div>
+    </div>`).join("");
+}
+
+function abrirTema(id){
+  TEMA = TEMAS.find(t=>t.id===id);
+  const r = document.documentElement.style;
+  r.setProperty("--glow-primary", TEMA.cor);
+  r.setProperty("--glow-secondary", TEMA.cor2);
+  r.setProperty("--glow-warm", TEMA.cor2);
+  $("barTitle").textContent = TEMA.nome;
+  $("barSub").textContent = "Identificando: "+TEMA.alvo;
+  if(TEMA.aviso){ $("warnText").textContent = TEMA.aviso; $("warnBox").style.display="flex"; }
+  else $("warnBox").style.display="none";
+  $("result").classList.remove("show");
+  $("previewWrap").classList.remove("show");
+  $("screenCatalog").classList.remove("active");
+  $("screenIdentify").classList.add("active");
+  window.scrollTo({top:0});
+}
+
+$("btnBack").onclick = ()=>{
+  $("screenIdentify").classList.remove("active");
+  $("screenCatalog").classList.add("active");
+  window.scrollTo({top:0});
+};
+
+let toastT;
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2600); }
+
+$("gear").onclick = ()=>{ $("keyInput").value=API_KEY; $("modal").classList.add("show"); };
+$("keyCancel").onclick = ()=> $("modal").classList.remove("show");
+$("keySave").onclick = ()=>{ API_KEY=$("keyInput").value.trim(); try{localStorage.setItem("gemini_key",API_KEY);}catch(e){} $("modal").classList.remove("show"); toast(API_KEY?"Chave salva.":"Chave removida."); };
+
+$("btnCam").onclick = ()=> requireKey() && $("fileCam").click();
+$("btnGallery").onclick = ()=> requireKey() && $("fileGal").click();
+$("fileCam").onchange = e => handleFile(e.target.files[0]);
+$("fileGal").onchange = e => handleFile(e.target.files[0]);
+function requireKey(){ if(!API_KEY){ $("modal").classList.add("show"); toast("Configure a chave da API primeiro."); return false; } return true; }
+
+async function handleFile(file){
+  if(!file) return;
+  const dataUrl = await readAsDataURL(file);
+  $("preview").src = dataUrl;
+  $("previewWrap").classList.add("show");
+  $("result").classList.remove("show");
+  $("scan").classList.add("on");
+  $("analysing").classList.add("on");
+  window.scrollTo({top:$("previewWrap").offsetTop-80,behavior:"smooth"});
+  const base64 = dataUrl.split(",")[1];
+  const mime = file.type || "image/jpeg";
+  try{ mostrarResultado(await identificar(base64,mime), dataUrl); }
+  catch(err){ console.error(err); mostrarErro(err.message); }
+  finally{ $("scan").classList.remove("on"); $("analysing").classList.remove("on"); }
+}
+function readAsDataURL(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=()=>rej(new Error("Não consegui ler a imagem.")); r.readAsDataURL(file); }); }
+
+async function identificar(base64, mime){
+  let prompt =
+`Você é ${TEMA.especialista}. Analise a imagem e identifique a ${TEMA.alvo} presente nela.
+
+Regras:
+- Se não conseguir identificar com confiança de pelo menos ${LIMIAR_CONFIANCA}%, defina "identificado" como false e explique de forma gentil no campo "mensagem".
+- Se a imagem claramente não contém uma ${TEMA.alvo}, defina "identificado" como false.
+- Responda sempre em português do Brasil.
+- O nome científico deve ser preciso.
+- As curiosidades devem ser verdadeiras, específicas e interessantes — nada genérico.
+- Em "status_conservacao", use a categoria da IUCN em português (ex.: Pouco preocupante, Vulnerável, Em perigo).`;
+  if(TEMA.aviso) prompt += `\n- Inclua naturalmente este aviso de segurança em uma das curiosidades: "${TEMA.aviso}"`;
+
+  const body = {
+    contents:[{ parts:[ {text:prompt}, {inline_data:{mime_type:mime, data:base64}} ] }],
+    generationConfig:{
+      temperature:0.2, responseMimeType:"application/json",
+      responseSchema:{ type:"object", properties:{
+        identificado:{type:"boolean"}, confianca:{type:"integer"},
+        nome_popular:{type:"string"}, nome_cientifico:{type:"string"},
+        status_conservacao:{type:"string"}, curiosidades:{type:"array",items:{type:"string"}},
+        especies_parecidas:{type:"array",items:{type:"string"}}, mensagem:{type:"string"}
+      }, required:["identificado","confianca","nome_popular","nome_cientifico","status_conservacao","curiosidades","especies_parecidas","mensagem"] }
+    }
+  };
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/${MODELO}:generateContent?key=${API_KEY}`;
+  const res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  if(!res.ok){
+    if(res.status===429) throw new Error("Limite de requisições atingido. Tente de novo em alguns instantes.");
+    if(res.status===400||res.status===403) throw new Error("Chave inválida ou sem permissão. Verifique na engrenagem.");
+    throw new Error("Erro na API ("+res.status+").");
+  }
+  const json=await res.json();
+  const texto=json?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if(!texto) throw new Error("A IA não retornou resposta. Tente outra foto.");
+  return JSON.parse(texto);
+}
+
+function mostrarResultado(d, dataUrl){
+  const r=$("result"); r.classList.add("show");
+  if(!d.identificado || d.confianca<LIMIAR_CONFIANCA){
+    r.innerHTML=`<div class="uncertain"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></div><h3>Não consegui ter certeza</h3><p>${escapeHtml(d.mensagem||"Tente uma foto mais nítida, com a "+TEMA.alvo+" bem enquadrada e com boa luz.")}</p><button class="again" onclick="resetar()">Tentar outra foto</button></div>`;
+    scrollToResult(); return;
+  }
+  const facts=(d.curiosidades||[]).map((c,i)=>`<li class="reveal" style="animation-delay:${.25+i*.08}s">${escapeHtml(c)}</li>`).join("");
+  const chips=(d.especies_parecidas||[]).map(c=>`<span class="chip">${escapeHtml(c)}</span>`).join("");
+  r.innerHTML=`<div class="card">
+    <div class="r-head reveal"><div><div class="r-name">${escapeHtml(d.nome_popular)}</div><div class="r-sci">${escapeHtml(d.nome_cientifico)}</div></div><div class="badge">${d.confianca}% certeza</div></div>
+    <div class="r-section reveal" style="animation-delay:.1s"><div class="r-label">Conservação</div><div class="conservation"><span class="dot"></span>${escapeHtml(d.status_conservacao)}</div></div>
+    ${facts?`<div class="r-section reveal" style="animation-delay:.18s"><div class="r-label">Você sabia?</div><ul class="facts">${facts}</ul></div>`:""}
+    ${chips?`<div class="r-section reveal" style="animation-delay:.3s"><div class="r-label">Parecidas</div><div class="chips">${chips}</div></div>`:""}
+    <button class="again" onclick="resetar()">Identificar outra</button></div>`;
+  adicionarAoAlbum(d, dataUrl); scrollToResult();
+}
+function mostrarErro(msg){ const r=$("result"); r.classList.add("show"); r.innerHTML=`<div class="uncertain"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></div><h3>Algo deu errado</h3><p>${escapeHtml(msg)}</p><button class="again" onclick="resetar()">Tentar de novo</button></div>`; scrollToResult(); }
+function adicionarAoAlbum(d,dataUrl){ if(album.some(a=>a.sci===d.nome_cientifico))return; album.unshift({nome:d.nome_popular,sci:d.nome_cientifico,img:dataUrl}); renderAlbum(); }
+function renderAlbum(){ $("albumCount").textContent=album.length+(album.length===1?" espécie":" espécies"); if(!album.length){ $("albumBody").innerHTML='<div class="album-empty">Suas identificações aparecem aqui.</div>'; return; } $("albumBody").innerHTML=`<div class="album-grid">`+album.map(a=>`<div class="album-item"><img src="${a.img}" alt=""><span>${escapeHtml(a.nome)}</span></div>`).join("")+`</div>`; }
+function resetar(){ $("result").classList.remove("show"); $("previewWrap").classList.remove("show"); window.scrollTo({top:0,behavior:"smooth"}); }
+function scrollToResult(){ setTimeout(()=>$("result").scrollIntoView({behavior:"smooth",block:"start"}),120); }
+function escapeHtml(s){ return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+renderCatalog();
+</script>
+</body>
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Pokédex da Mata</title>
+
+    <!-- FONTS -->
+
+    <link rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+
+    <link rel="stylesheet"
+        href="./assets/css/style.css">
+
+    <link rel="stylesheet"
+        href="./assets/css/pokedex.css">
+
+    <link rel="stylesheet"
+        href="./assets/css/animations.css">
+
+    <!-- LEAFLET -->
+
+    <link rel="stylesheet"
+        href="https://unpkg.com/leaflet/dist/leaflet.css">
+
+</head>
+
+<body>
+
+    <main class="app">
+
+        <!-- ================================= -->
+        <!-- TELA INICIAL                      -->
+        <!-- ================================= -->
+
+        <section
+            id="screenCatalogo"
+            class="screen active">
+
+            <header class="hero">
+
+                <span class="eyebrow">
+
+                    Núcleo WIT • IA Ambiental
+
+                </span>
+
+                <h1>
+
+                    🐾 Pokédex da Mata
+
+                </h1>
+
+                <p>
+
+                    Descubra mamíferos brasileiros através da Inteligência Artificial.
+
+                </p>
+
+            </header>
+
+            <div class="mamifero-card">
+
+                <div class="card-icon">
+
+                    🐆
+
+                </div>
+
+                <h2>
+
+                    Mamíferos Brasileiros
+
+                </h2>
+
+                <p>
+
+                    Tire uma foto ou envie uma imagem para identificar espécies da fauna brasileira.
+
+                </p>
+
+                <button id="btnIniciar">
+
+                    Iniciar Scanner
+
+                </button>
+
+            </div>
+
+            <section class="destaques">
+
+                <h3>
+
+                    Espécies que você pode encontrar
+
+                </h3>
+
+                <div class="cat-grid">
+
+                    <div class="animal-card">
+
+                        🐆 Onça-pintada
+
+                    </div>
+
+                    <div class="animal-card">
+
+                        🦥 Bicho-preguiça
+
+                    </div>
+
+                    <div class="animal-card">
+
+                        🐺 Lobo-guará
+
+                    </div>
+
+                    <div class="animal-card">
+
+                        🐜 Tamanduá-bandeira
+
+                    </div>
+
+                    <div class="animal-card">
+
+                        🐒 Mico-leão-dourado
+
+                    </div>
+
+                    <div class="animal-card">
+
+                        🦦 Ariranha
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </section>
+
+        <!-- ================================= -->
+        <!-- SCANNER                           -->
+        <!-- ================================= -->
+
+        <section
+            id="screenScanner"
+            class="screen">
+
+            <div class="bar">
+
+                <button
+                    id="btnBack"
+                    class="back-btn">
+
+                    ←
+
+                </button>
+
+                <div>
+
+                    <h2 id="barTitle">
+
+                        Mamíferos Brasileiros
+
+                    </h2>
+
+                    <span id="barSub">
+
+                        IA identificando espécies da fauna nacional
+
+                    </span>
+
+                </div>
+
+            </div>
+
+            <!-- CAPTURA -->
+
+            <div class="capture-card">
+
+                <div class="scanner-screen">
+
+                    <img
+                        id="previewImagem"
+                        src="./assets/img/placeholder.png"
+                        alt="Prévia da imagem">
+
+                </div>
+
+                <div class="scanner-buttons">
+
+                    <button
+                        id="btnCamera">
+
+                        📷 Tirar Foto
+
+                    </button>
+
+                    <button
+                        id="btnGaleria">
+
+                        🖼️ Escolher da Galeria
+
+                    </button>
+
+                </div>
+
+                <input
+                    type="file"
+                    id="inputCamera"
+                    accept="image/*"
+                    capture="environment"
+                    hidden>
+
+                <input
+                    type="file"
+                    id="inputGaleria"
+                    accept="image/*"
+                    hidden>
+
+            </div>
+
+            <!-- LOADING -->
+
+            <div
+                id="analysing"
+                class="analysing">
+
+                🔎 Analisando mamífero...
+
+            </div>
+
+            <!-- RESULTADO -->
+
+            <section
+                id="informacoes"
+                class="informacoes">
+
+                <div class="resultado-header">
+
+                    <h2 id="nomeAnimal">
+
+                        —
+
+                    </h2>
+
+                    <p id="nomeCientifico">
+
+                        —
+
+                    </p>
+
+                    <span id="confianca">
+
+                        0%
+
+                    </span>
+
+                </div>
+
+                <!-- TABS -->
+
+                <div class="tabs">
+
+                    <button
+                        class="tab-btn active"
+                        data-tab="dados">
+
+                        📖 Dados
+
+                    </button>
+
+                    <button
+                        class="tab-btn"
+                        data-tab="habitat">
+
+                        🌎 Habitat
+
+                    </button>
+
+                </div>
+
+                <!-- DADOS -->
+
+                <div
+                    id="dados"
+                    class="tab-content active">
+
+                    <div class="card-info">
+
+                        <h3>
+
+                            Descrição
+
+                        </h3>
+
+                        <p id="descricao">
+
+                        </p>
+
+                    </div>
+
+                    <div class="card-info">
+
+                        <h3>
+
+                            Status de Conservação
+
+                        </h3>
+
+                        <span id="statusConservacao">
+
+                            —
+
+                        </span>
+
+                    </div>
+
+                    <div class="card-info">
+
+                        <h3>
+
+                            Curiosidades
+
+                        </h3>
+
+                        <ul id="curiosidades">
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+                <!-- HABITAT -->
+
+                <div
+                    id="habitat"
+                    class="tab-content">
+
+                    <div class="card-info">
+
+                        <h3>
+
+                            Bioma Brasileiro
+
+                        </h3>
+
+                        <div id="bioma">
+
+                        </div>
+
+                    </div>
+
+                    <div class="card-info">
+
+                        <h3>
+
+                            Distribuição Geográfica
+
+                        </h3>
+
+                        <div id="mapa">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ÁLBUM -->
+
+            <section class="album">
+
+                <div class="album-header">
+
+                    <h2>
+
+                        📚 Álbum de Descobertas
+
+                    </h2>
+
+                    <span id="albumCount">
+
+                        0 espécies
+
+                    </span>
+
+                </div>
+
+                <div
+                    id="album"
+                    class="album-grid">
+
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+    <!-- TOAST -->
+
+    <div
+        id="toast"
+        class="toast">
+
+    </div>
+
+    <!-- LEAFLET -->
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <!-- APP -->
+
+    <script
+        type="module"
+        src="./js/app.js"></script>
+
+</body>
+
+</html>
